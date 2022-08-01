@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CreaturePair = System.Collections.Generic.KeyValuePair<int, GameCreatures.Models.Creature>;
 
 
 namespace Creatures.Services
@@ -12,71 +11,61 @@ namespace Creatures.Services
     public class BestTargetFinder : IBestTargetFinder
     {
 
-        public Creature FindBestTarget(List<Creature> targets, Creature attacker)
+        public GameCreatures.Models.Creature FindBestTarget(List<GameCreatures.Models.Creature> targets, GameCreatures.Models.Creature attacker)
         {
             if (targets == null)
             {
                 throw new ArgumentNullException("There are no targets");
             }
 
-            List<CreaturePair> damagedTargets = SimulateDamage(targets, attacker);
-            List<CreaturePair> dyingTargets = TakeDyingTargets(damagedTargets);
 
-            int bestDyingTargetIndex = FindBestDamagedTarget(dyingTargets, attacker);
-            if (bestDyingTargetIndex != -1)
+            List<Creature> damagedTargets = SortByMostDamaged(targets, attacker);
+            List<Creature> dyingTargets = TakeDyingTargets(damagedTargets, attacker);
+            Creature bestDyingTarget = FindBestDamagedTarget(dyingTargets, attacker);
+            if (bestDyingTarget != null)
             {
-                return targets[bestDyingTargetIndex];
+                return bestDyingTarget;
             }
 
-            List<CreaturePair> lowestHPTargets = TakeLowestHPTargets(damagedTargets);
-            int bestDamagedTargetIndex = FindBestDamagedTarget(lowestHPTargets, attacker);
-            return targets[bestDamagedTargetIndex];
+            List<Creature> lowestHPTargets = TakeLowestHPTargets(damagedTargets, attacker);
+            Creature bestDamagedTarget = FindBestDamagedTarget(lowestHPTargets, attacker);
+           
+            return bestDamagedTarget;
         }
 
-        public int FindMostDangerous(List<CreaturePair> targets, Creature attacker)
+        public Creature FindMostDangerous(List<Creature> targets, Creature attacker)
         {
             int maxDamage = 0;
             int index = 0;
-            foreach (CreaturePair target in targets)
+            for (int i = 0 ; i < targets.Count; i++)
             {
-                int currentTargetDamage = target.Value.CalculateActualDamage(attacker);
+                int currentTargetDamage = targets[i].CalculateActualDamage(attacker);
                 if (currentTargetDamage > maxDamage)
                 {
                     maxDamage = currentTargetDamage;
-                    index = target.Key;
+                    index = i;
                 }
             }
-            return index;
+            return targets[index];
         }
 
-        public List<CreaturePair> SimulateDamage(List<Creature> targets, Creature attacker)
+        public List<Creature> SortByMostDamaged(List<Creature> targets, Creature attacker)
         {
-            List<Creature> copyTargets = targets.ConvertAll(t => new Creature(t.Name,
-                                                                              t.Damage,
-                                                                              t.HealthPoints,
-                                                                              t.AttackType,
-                                                                              t.ArmorType,
-                                                                              new BestTargetFinder()));
-            List<CreaturePair> simulatedTargets = new List<CreaturePair>();
-            for (int i = 0; i < copyTargets.Count; i++)
-            {
-                copyTargets[i].TakeDamage(attacker.CalculateActualDamage(copyTargets[i]));
-                simulatedTargets.Add(new CreaturePair(i, copyTargets[i]));
-            }
-            return simulatedTargets;
+            List<Creature> newTargets = targets.OrderBy(t => t.HealthPoints - attacker.CalculateActualDamage(t)).ToList();
+            return newTargets;
         }
-        public List<CreaturePair> TakeDyingTargets(List<CreaturePair> targets)
+        public List<Creature> TakeDyingTargets(List<Creature> targets, Creature attacker)
         {
-            return targets.FindAll(t => t.Value.HealthPoints == 0);
+            return targets.FindAll(t => t.HealthPoints - attacker.CalculateActualDamage(t) <= 0);
         }
 
-        public List<CreaturePair> TakeLowestHPTargets(List<CreaturePair> targets)
+        public List<Creature> TakeLowestHPTargets(List<Creature> targets, Creature attacker)
         {
-            int lowestHP = targets.Min(t => t.Value.HealthPoints);
-            return targets.FindAll(t => t.Value.HealthPoints == lowestHP);
+            int lowestHP = targets.Min(t => t.HealthPoints - attacker.CalculateActualDamage(t));
+            return targets.FindAll(t => t.HealthPoints - attacker.CalculateActualDamage(t) == lowestHP);
         }
 
-        public int FindBestDamagedTarget(List<CreaturePair> targets, Creature attacker)
+        public Creature FindBestDamagedTarget(List<Creature> targets, Creature attacker)
         {
             if (targets.Count > 1)
             {
@@ -84,9 +73,9 @@ namespace Creatures.Services
             }
             if (targets.Count == 1)
             {
-                return targets[0].Key;
+                return targets[0];
             }
-            return -1;
+            return null;
         }
 
 
