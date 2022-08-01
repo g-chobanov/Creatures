@@ -1,4 +1,5 @@
-﻿using GameCreatures.Models;
+﻿using Creatures.Services;
+using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -7,10 +8,11 @@ namespace GameCreatures.UnitTests.CreatureTests
     [TestClass]
     public class Constructor_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         [TestMethod]
         public void SetProperties()
         {
-            var creature = new Creature("Dummy", 10, 10, AttackType.Magic, ArmorType.Medium);
+            var creature = new Creature("Dummy", 10, 10, AttackType.Magic, ArmorType.Medium, _finder);
 
             Assert.AreEqual("Dummy", creature.Name);
             Assert.AreEqual(10, creature.Damage);
@@ -23,21 +25,21 @@ namespace GameCreatures.UnitTests.CreatureTests
         public void ThrowArgumentNullException_NullName()
         {
             Assert.ThrowsException<ArgumentNullException>(
-                () => new Creature(null, 10, 10, default, default));
+                () => new Creature(null, 10, 10, default, default, _finder));
         }
 
         [TestMethod]
         public void ThrowRangeException_InvalidDamage()
         {
             Assert.ThrowsException<ArgumentOutOfRangeException>(
-                () => new Creature("", 0, 10, default, default));
+                () => new Creature("", 0, 10, default, default, _finder));
         }
 
         [TestMethod]
         public void ThrowRangeException_InvalidHealth()
         {
             Assert.ThrowsException<ArgumentOutOfRangeException>(
-                () => new Creature("", 10, 0, default, default));
+                () => new Creature("", 10, 0, default, default, _finder));
         }
     }
 }

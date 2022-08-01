@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using Creatures.Models;
 using Creatures.Contracts;
+using Creatures.Services;
+using Creatures.Services.Contracts;
 
 namespace GameCreatures.Models
 {
-    
+
     public class Creature : IDamagable
     {
         private string _name;
         private int _damage;
         private int _healthPoints;
-        private BestTargetFinder _targetFinder;
+        private IBestTargetFinder _targetFinder;
 
         public Creature(
             string name,
             int damage,
             int hitPoints,
             AttackType attackType,
-            ArmorType armorType)
+            ArmorType armorType,
+            IBestTargetFinder targetFinder)
         {
             if (hitPoints <= 0)
             {
@@ -29,7 +32,7 @@ namespace GameCreatures.Models
             this.HealthPoints = hitPoints;
             this.AttackType = attackType;
             this.ArmorType = armorType;
-            _targetFinder = new BestTargetFinder();
+            _targetFinder = targetFinder;
 
         }
 
@@ -85,6 +88,7 @@ namespace GameCreatures.Models
             target.TakeDamage(modifiedDamage);
         }
 
+        //leaving it as it is for project purposes, would remove it in other cases and just call targetFinder's methods
         public Creature FindBestTarget(List<Creature> targets)
         {
             return _targetFinder.FindBestTarget(targets, this);

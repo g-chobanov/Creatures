@@ -1,4 +1,5 @@
-﻿using GameCreatures.Models;
+﻿using Creatures.Services;
+using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameCreatures.UnitTests.CreatureTests
@@ -6,6 +7,7 @@ namespace GameCreatures.UnitTests.CreatureTests
     [TestClass]
     public class Attack_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         /* ¯\_(ツ)_/¯ */
         [TestMethod]
         [DataRow(63, ArmorType.Light, AttackType.Magic)]
@@ -20,8 +22,8 @@ namespace GameCreatures.UnitTests.CreatureTests
         public void DealCorrectDamageToTarget(
             int expectedHealth, ArmorType armorType, AttackType attackType)
         {
-            var attacker = new Creature("Dragon", 50, 1000, attackType, default);
-            var target = new Creature("Sheep", 1, 100, default, armorType);
+            var attacker = new Creature("Dragon", 50, 1000, attackType, default, _finder);
+            var target = new Creature("Sheep", 1, 100, default, armorType, _finder);
 
             attacker.Attack(target);
 

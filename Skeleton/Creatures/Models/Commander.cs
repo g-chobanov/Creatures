@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameCreatures.Models
 {
-    public class Commander
+    public class Commander 
     {
         private readonly List<Creature> _army;
         private string _name;

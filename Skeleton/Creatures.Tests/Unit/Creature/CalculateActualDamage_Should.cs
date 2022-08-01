@@ -1,4 +1,5 @@
-﻿using GameCreatures.Models;
+﻿using Creatures.Services;
+using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameCreatures.UnitTests.CreatureTests
@@ -6,11 +7,12 @@ namespace GameCreatures.UnitTests.CreatureTests
     [TestClass]
     public class CalculateActualDamage_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         [TestMethod]
         public void DoNotDamageTarget()
         {
-            var attacker = new Creature("Dummy", 10, 10, default, default);
-            var target = new Creature("Dummy", 10, 10, default, default);
+            var attacker = new Creature("Dummy", 10, 10, default, default, _finder);
+            var target = new Creature("Dummy", 10, 10, default, default, _finder);
 
             attacker.CalculateActualDamage(target);
 
@@ -31,8 +33,8 @@ namespace GameCreatures.UnitTests.CreatureTests
         public void CalculateCorrectDamage(
             int damage, ArmorType armorType, AttackType attackType)
         {
-            var attacker = new Creature("Dummy", 50, 1000, attackType, default);
-            var target = new Creature("Dummy", 1, 100, default, armorType);
+            var attacker = new Creature("Dummy", 50, 1000, attackType, default, _finder);
+            var target = new Creature("Dummy", 1, 100, default, armorType, _finder);
 
             Assert.AreEqual(damage, attacker.CalculateActualDamage(target));
         }

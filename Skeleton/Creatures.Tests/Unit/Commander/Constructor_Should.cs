@@ -1,4 +1,5 @@
-﻿using GameCreatures.Models;
+﻿using Creatures.Services;
+using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,12 @@ namespace GameCreatures.UnitTests.CommanderTests
     [TestClass]
     public class Constructor_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         [TestMethod]
         public void SetProperties()
         {
             var commander = new Commander("cmd", 
-                new List<Creature>() { new Creature("Dummy", 1, 1, default, default) });
+                new List<Creature>() { new Creature("Dummy", 1, 1, default, default, _finder) });
 
             Assert.AreEqual("cmd", commander.Name);
             Assert.AreEqual(1, commander.ArmySize);

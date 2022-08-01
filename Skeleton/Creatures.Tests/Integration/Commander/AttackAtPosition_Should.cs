@@ -2,17 +2,19 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
+using Creatures.Services;
 
 namespace GameCreatures.IntegrationTests.CommanderTests
 {
     [TestClass]
     public class AttackAtPosition_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         [TestMethod]
         public void Attack_Attacker_Out_Of_Bound_Exception_Thrown()
         {
-            var creature1 = new Creature("Dummy", 10, 100, default, default);
-            var creature2 = new Creature("Dummy", 10, 100, default, default);
+            var creature1 = new Creature("Dummy", 10, 100, default, default, _finder);
+            var creature2 = new Creature("Dummy", 10, 100, default, default, _finder);
             var commander1 = new Commander("Cmd1", new List<Creature> { creature1 });
             var commander2 = new Commander("Cmd2", new List<Creature> { creature2 });
 
@@ -20,8 +22,8 @@ namespace GameCreatures.IntegrationTests.CommanderTests
         }
         public void Attack_Target_Out_Of_Bound_Exception_Thrown()
         {
-            var creature1 = new Creature("Dummy", 10, 100, default, default);
-            var creature2 = new Creature("Dummy", 10, 100, default, default);
+            var creature1 = new Creature("Dummy", 10, 100, default, default, _finder);
+            var creature2 = new Creature("Dummy", 10, 100, default, default, _finder);
             var commander1 = new Commander("Cmd1", new List<Creature> { creature1 });
             var commander2 = new Commander("Cmd2", new List<Creature> { creature2 });
 
@@ -33,10 +35,10 @@ namespace GameCreatures.IntegrationTests.CommanderTests
         [DataRow(2, 38)]
         public void Attack_WithCorrectAttacker(int attackerIndex, int expectedHealth)
         {
-            var target = new Creature("Dummy", 10, 100, default, ArmorType.Light);
-            var attacker1 = new Creature("Dummy", 50, 100, AttackType.Magic, default);
-            var attacker2 = new Creature("Dummy", 50, 100, AttackType.Melee, default);
-            var attacker3 = new Creature("Dummy", 50, 100, AttackType.Ranged, default);
+            var target = new Creature("Dummy", 10, 100, default, ArmorType.Light, _finder);
+            var attacker1 = new Creature("Dummy", 50, 100, AttackType.Magic, default, _finder);
+            var attacker2 = new Creature("Dummy", 50, 100, AttackType.Melee, default, _finder);
+            var attacker3 = new Creature("Dummy", 50, 100, AttackType.Ranged, default, _finder);
             var commander1 = new Commander("Cmd1", new List<Creature> { attacker1, attacker2, attacker3 });
             var commander2 = new Commander("Cmd2", new List<Creature> { target });
 
@@ -53,12 +55,12 @@ namespace GameCreatures.IntegrationTests.CommanderTests
         {
             var targetList = new List<Creature>
             {
-                new Creature("Dummy", 10, 100, default, ArmorType.Light),
-                new Creature("Dummy", 10, 100, default, ArmorType.Medium),
-                new Creature("Dummy", 10, 100, default, ArmorType.Heavy)
+                new Creature("Dummy", 10, 100, default, ArmorType.Light, _finder),
+                new Creature("Dummy", 10, 100, default, ArmorType.Medium, _finder),
+                new Creature("Dummy", 10, 100, default, ArmorType.Heavy, _finder)
             };
 
-            var attacker = new Creature("Dummy", 50, 100, AttackType.Ranged, default);
+            var attacker = new Creature("Dummy", 50, 100, AttackType.Ranged, default, _finder);
             var commander1 = new Commander("Cmd1", new List<Creature> { attacker });
             var commander2 = new Commander("Cmd2", targetList);
 
@@ -71,9 +73,9 @@ namespace GameCreatures.IntegrationTests.CommanderTests
         public void ReduceArmySize_WhenTargetDies()
         {
             var commander1 = new Commander("Cmd1",
-                new List<Creature> { new Creature("Dummy", 10, 10, default, default) });
+                new List<Creature> { new Creature("Dummy", 10, 10, default, default, _finder) });
             var commander2 = new Commander("Cmd2",
-                new List<Creature> { new Creature("Dummy", 10, 10, default, default) });
+                new List<Creature> { new Creature("Dummy", 10, 10, default, default, _finder) });
 
             commander1.AttackAtPosition(commander2, 0, 0);
 

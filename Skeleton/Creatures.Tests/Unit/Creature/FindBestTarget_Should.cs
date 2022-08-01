@@ -1,4 +1,5 @@
-﻿using GameCreatures.Models;
+﻿using Creatures.Services;
+using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
@@ -7,11 +8,12 @@ namespace GameCreatures.UnitTests.CreatureTests
     [TestClass]
     public class FindBestTarget_Should
     {
+        private BestTargetFinder _finder = new BestTargetFinder();
         [TestMethod]
         public void DoNotDamageProposedTarget()
         {
-            var target = new Creature("Dummy", 1, 10, default, default);
-            var attacker = new Creature("Dummy", 1000, 1, default, default);
+            var target = new Creature("Dummy", 1, 10, default, default, _finder);
+            var attacker = new Creature("Dummy", 1000, 1, default, default, _finder);
 
             var bestTarget = attacker
                 .FindBestTarget(new List<Creature> { target });
@@ -22,8 +24,8 @@ namespace GameCreatures.UnitTests.CreatureTests
         [TestMethod]
         public void FindBest_SingleItemList()
         {
-            var target = new Creature("Dummy", 1, 1, default, default);
-            var attacker = new Creature("Dummy", 1, 1, default, default);
+            var target = new Creature("Dummy", 1, 1, default, default, _finder);
+            var attacker = new Creature("Dummy", 1, 1, default, default, _finder);
 
             var bestTarget = attacker
                 .FindBestTarget(new List<Creature> { target });
@@ -34,10 +36,10 @@ namespace GameCreatures.UnitTests.CreatureTests
         [TestMethod]
         public void FindBest_EqualHealth_DifferentArmorTargets()
         {
-            var target1 = new Creature("Dummy", 1, 100, default, ArmorType.Medium);
-            var target2 = new Creature("Dummy", 1, 100, default, ArmorType.Heavy);
+            var target1 = new Creature("Dummy", 1, 100, default, ArmorType.Medium, _finder);
+            var target2 = new Creature("Dummy", 1, 100, default, ArmorType.Heavy, _finder);
 
-            var attacker = new Creature("Dummy", 10, 100, AttackType.Magic, default);
+            var attacker = new Creature("Dummy", 10, 100, AttackType.Magic, default, _finder);
 
             var bestTarget = attacker
                 .FindBestTarget(new List<Creature> { target1, target2 });
@@ -50,10 +52,10 @@ namespace GameCreatures.UnitTests.CreatureTests
         [TestMethod]
         public void FindBest_DifferentArmor_DifferentHealthTargets()
         {
-            var target1 = new Creature("Dummy", 1, 80, default, ArmorType.Medium);
-            var target2 = new Creature("Dummy", 1, 100, default, ArmorType.Heavy);
+            var target1 = new Creature("Dummy", 1, 80, default, ArmorType.Medium, _finder);
+            var target2 = new Creature("Dummy", 1, 100, default, ArmorType.Heavy, _finder);
 
-            var attacker = new Creature("Dummy", 20, 100, AttackType.Magic, default);
+            var attacker = new Creature("Dummy", 20, 100, AttackType.Magic, default, _finder);
 
             var bestTarget = attacker
                 .FindBestTarget(new List<Creature> { target1, target2 });
@@ -66,10 +68,10 @@ namespace GameCreatures.UnitTests.CreatureTests
         [TestMethod]
         public void FindBest_BonusDamage_OvercomesHealthDisadvantage()
         {
-            var target1 = new Creature("Dummy", 1, 85, default, ArmorType.Medium);
-            var target2 = new Creature("Dummy", 1, 90, default, ArmorType.Heavy);
+            var target1 = new Creature("Dummy", 1, 85, default, ArmorType.Medium, _finder);
+            var target2 = new Creature("Dummy", 1, 90, default, ArmorType.Heavy, _finder);
 
-            var attacker = new Creature("Dummy", 40, 100, AttackType.Magic, default);
+            var attacker = new Creature("Dummy", 40, 100, AttackType.Magic, default, _finder);
 
             var bestTarget = attacker
                 .FindBestTarget(new List<Creature> { target1, target2 });
@@ -82,10 +84,10 @@ namespace GameCreatures.UnitTests.CreatureTests
         [TestMethod]
         public void FindBest_BothTargetsWouldDie_PreferMoreDamagingOne()
         {
-            var target1 = new Creature("Dummy", 10, 10, default, ArmorType.Medium);
-            var target2 = new Creature("Dummy", 15, 15, default, ArmorType.Medium);
+            var target1 = new Creature("Dummy", 10, 10, default, ArmorType.Medium, _finder);
+            var target2 = new Creature("Dummy", 15, 15, default, ArmorType.Medium, _finder);
 
-            var attacker = new Creature("Dummy", 35, 100, AttackType.Magic, default);
+            var attacker = new Creature("Dummy", 35, 100, AttackType.Magic, default, _finder);
 
             var actualTarget = attacker
                 .FindBestTarget(new List<Creature> { target1, target2 });
