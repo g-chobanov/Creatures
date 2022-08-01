@@ -1,12 +1,32 @@
 ﻿using GameCreatures.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System;
 
 namespace GameCreatures.IntegrationTests.CommanderTests
 {
     [TestClass]
     public class AttackAtPosition_Should
     {
+        [TestMethod]
+        public void Attack_Attacker_Out_Of_Bound_Exception_Thrown()
+        {
+            var creature1 = new Creature("Dummy", 10, 100, default, default);
+            var creature2 = new Creature("Dummy", 10, 100, default, default);
+            var commander1 = new Commander("Cmd1", new List<Creature> { creature1 });
+            var commander2 = new Commander("Cmd2", new List<Creature> { creature2 });
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => commander1.AttackAtPosition(commander2, -1, 1));
+        }
+        public void Attack_Target_Out_Of_Bound_Exception_Thrown()
+        {
+            var creature1 = new Creature("Dummy", 10, 100, default, default);
+            var creature2 = new Creature("Dummy", 10, 100, default, default);
+            var commander1 = new Commander("Cmd1", new List<Creature> { creature1 });
+            var commander2 = new Commander("Cmd2", new List<Creature> { creature2 });
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => commander1.AttackAtPosition(commander2, 1, -1));
+        }
         [TestMethod]
         [DataRow(0, 63)]
         [DataRow(1, 50)]

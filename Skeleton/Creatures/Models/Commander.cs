@@ -39,20 +39,21 @@ namespace GameCreatures.Models
 
         public void AttackAtPosition(Commander enemy, int attackerIndex, int targetIndex)
         {
-            try
+            if ( attackerIndex < 0 || attackerIndex >= this._army.Count )
             {
-                Creature attacker = this._army[attackerIndex];
-                Creature target = enemy._army[targetIndex];
-                attacker.Attack(target);
-                if (target.HealthPoints == 0)
-                {
-                    enemy._army.Remove(target);
-                }
-
+                throw new ArgumentOutOfRangeException("Attacker or target index out of range!");
             }
-            catch (IndexOutOfRangeException e)
+            if (targetIndex < 0 || targetIndex >= enemy._army.Count)
             {
-                throw new ArgumentOutOfRangeException("Attacker or target index out of range!", e);
+                throw new ArgumentOutOfRangeException("Attacker or target index out of range!");
+            }
+      
+            Creature attacker = this._army[attackerIndex];
+            Creature target = enemy._army[targetIndex];
+            attacker.Attack(target);
+            if (target.HealthPoints == 0)
+            {
+                enemy._army.Remove(target);
             }
         }
 
